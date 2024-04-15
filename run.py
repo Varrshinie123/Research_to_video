@@ -92,15 +92,18 @@ def generate_video(audio_path, pdf_path):
     print (image_paths)
 
     # Creating the video from images
-    images_to_video(image_paths,   str(output_video_file), int(duration_per_page) )
-   
+    # images_to_video(image_paths,   str(output_video_file), int(duration_per_page) )
+    
+    images_to_video(image_paths, str(output_video_file), fps=30, duration=int(duration_per_page))
+    
+
 
 
     # Combine audio and video
     output_video_file_str = str(output_video_file)
     video_clip = VideoFileClip(output_video_file_str)
     video_clip = video_clip.set_audio(audio_clip)
-    video_clip.write_videofile(output_video_file_str, codec="libx264", fps=24)
+    video_clip.write_videofile(output_video_file_str + ".mp4")
 
     return output_video_file_str
 
