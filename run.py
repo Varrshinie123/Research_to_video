@@ -18,36 +18,35 @@ app = Flask(__name__)
 # Define the summarization pipeline using the facebook/bart-large-cnn model
 summarizer = pipeline("summarization", model="pszemraj/long-t5-tglobal-base-16384-book-summary")
 
-@app.route("/", methods=["GET", "POST"])
-def home():
-    if request.method == "POST":
-        if "pdf_file" not in request.files:
-            return render_template("index2.html", error="No file part")
+@app.route("/upload_pdf", methods=["POST"])
+def upload_pdf():
+    if "pdf_file" not in request.files:
+        return jsonify({"error": "No file part"})
 
-        pdf_file = request.files["pdf_file"]
-        if pdf_file.filename == "":
-            return render_template("index2.html", error="No selected file")
+    pdf_file = request.files["pdf_file"]
+    if pdf_file.filename == "":
+        return jsonify({"error": "No selected file"})
 
-        if pdf_file:
-            # Save the uploaded PDF file
-            pdf_path = os.path.join("uploads", pdf_file.filename)
-            pdf_file.save(pdf_path)
+    # Save the uploaded PDF file
+    pdf_path = os.path.join("uploads", pdf_file.filename)
+    pdf_file.save(pdf_path)
 
-            # Extract text from the PDF
-            text = extract_text_from_pdf(pdf_path)
+    # Extract text from the PDF
+    text = extract_text_from_pdf(pdf_path)
 
-            # Summarize the extracted text
-            summary = summarize_text(text)
+    # Summarize the extracted text
+    summary = summarize_text(text)
 
-            # Generate audio from the summary
-            audio_path = generate_audio(summary, pdf_file.filename)
-            
-            # Generate video from the audio and images from the research paper
-            video_path = generate_video(audio_path, pdf_path)
+    # Generate audio from the summary
+    audio_path = generate_audio(summary, pdf_file.filename)
+    
+    # Generate video from the audio and images from the research paper
+    video_path = generate_video(audio_path, pdf_path)
 
-            return render_template("index2.html", summary=summary, audio_path=audio_path, video_path=video_path)
+    # Return the video URL
+    video_url = f"http://localhost:5000/{video_path}"
+    return jsonify({"video_url": video_url})
 
-    return render_template("index2.html")
 
 def extract_text_from_pdf(pdf_path):
     with open(pdf_path, 'rb') as file:
