@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 
-const UploadPdf = () => {
+const UploadPdf = ({ setVideoUrl }) => {
     const [pdfFile, setPdfFile] = useState(null);
-    const [convertedVideoUrl, setConvertedVideoUrl] = useState('');
 
     const handleFileChange = (e) => {
         setPdfFile(e.target.files[0]);
@@ -18,7 +17,7 @@ const UploadPdf = () => {
                 body: formData,
             });
             const data = await response.json();
-            setConvertedVideoUrl(data.video_url);
+            setVideoUrl(data.video_url); // Update the video URL in the parent component
         } catch (error) {
             console.error('Error uploading PDF:', error);
         }
@@ -28,12 +27,6 @@ const UploadPdf = () => {
         <div>
             <input type="file" accept=".pdf" onChange={handleFileChange} />
             <button onClick={handleUpload}>Upload PDF</button>
-            {convertedVideoUrl && (
-                <video controls>
-                    <source src={convertedVideoUrl} type="video/mp4" />
-                    Your browser does not support the video tag.
-                </video>
-            )}
         </div>
     );
 };

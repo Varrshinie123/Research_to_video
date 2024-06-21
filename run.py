@@ -8,6 +8,7 @@ from pdf_processing import pdf_to_images
 from moviepy.audio.io.AudioFileClip import AudioFileClip
 from flask import Flask, render_template, request
 from transformers import pipeline
+from flask import jsonify
 
 from gtts import gTTS
 from PyPDF2 import PdfReader
